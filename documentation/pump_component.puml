@@ -1,0 +1,41 @@
+@startuml
+'https://plantuml.com/component-diagram
+skinparam componentStyle uml1
+
+package "Feather" {
+   node "GPIO Pins" {
+    [D5]
+   }
+   node "Analog Pins"{
+    [A0-A1]
+    [A2-A3]
+    [A4-A5]
+   }
+    node "Python program"{
+       node "pumping_controller" {
+       [remote_event_notifier]
+       [pump_controller]
+       [water_level]
+       }
+    }
+  [pump_controller] -up-> [D5]:Programmatic\nOn/Off
+  [water_level] -up-> [A0-A1]:Programmatic\nRead value
+  [water_level] -up-> [A2-A3]:Programmatic\nRead value
+  [water_level] -up-> [A4-A5]:Programmatic\nRead value
+}
+
+package "Spring Boot\nRest Server" {
+  [SpringBoot Java Application]
+}
+
+
+database "Hardware Components/Sensors\nconnected outside Bucket" {
+   [Relay Switch]--> [D5]:Wired
+   [Pump]--> [Relay Switch]:Wired
+   [Top Water Sensor] --> [A4-A5]:Wired
+   [Middle Water Sensor]--> [A2-A3]:Wired
+   [Bottom Water Sensor]--> [A0-A1]:Wired
+
+}
+[remote_event_notifier] --down-> [SpringBoot Java Application]:HTTP POST/GET
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+
+[*] -Down-> Idle
+
+state Water_Fillup {
+Idle -Down-> Ready
+Idle : When water level is lower than bottom water level sensor
+
+Ready -Down-> Water_Pumping
+Ready : When water level is higher than bottom water level sensor
+}
+
+state Water_Pumping {
+
+Pumping -Down-> Verify
+Pumping : When water level reaches top water level sensor
+
+Verify -> Done
+Verify : When pumping starts, code waits for water level to go lower than the middle water sensor.\nThis proves the pump is removing water.
+}
+ state Done {
+Turn_Off_Pump -> Idle
+Turn_Off_Pump : Turns off pump when water level goes lower than bottom water level sensor
+  }
+
+
+
+@enduml
