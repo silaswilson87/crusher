@@ -30,7 +30,9 @@ while True:
     # and turn on/off pump according to water level.
     pumping_state = pumping.check_state()
     debug.print_debug("Pumping State: "+pumping_state)
-
-    time.sleep(20)
+    if debug.is_debug():
+        time.sleep(20)
+    else:
+        time.sleep(60)
 
 
