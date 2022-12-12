@@ -85,6 +85,10 @@ class RemoteEventNotifier:
         self.debug.print_debug("send_status_handshake "+str(status))
         return self.do_post("/status",status)
 
+    def send_unknown_status(self):
+        self.debug.print_debug("send_unknown_status")
+        return self.do_post("/send_unknown_status",self.generate_default_post_body())
+
 
     def send_pumping_canceled_ack(self):
         self.debug.print_debug("send_pumping_canceled_ack")
