@@ -22,6 +22,7 @@ class WaterLevelController:
         self.dry_level = EMPTY_VALUE
         self.wet_level = LOW_VALUE
 
+    # Allows the outside to easily tweak the on/off level triggers if/when defaults don't work for a give sensor
     def set_dry_wet(self, dry: int, wet: int):
         self.dry_level = dry
         self.wet_level = wet
