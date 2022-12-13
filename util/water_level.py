@@ -9,7 +9,7 @@ LOW_VALUE = 36000
 EMPTY_VALUE = 11000
 
 
-class WaterLevelController:
+class WaterLevelReader:
     DRY = "dry"
     WET = "wet"
 

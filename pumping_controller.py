@@ -7,7 +7,7 @@ from util.debug import Debug
 from util.pump_controller import PumpController
 from util.remote_event_notifier import RemoteEventNotifier
 from util.simple_timer import Timer
-from util.water_level import WaterLevelController
+from util.water_level import WaterLevelReader
 
 bottom = 0
 middle = 1
@@ -29,12 +29,12 @@ class PumpingController:
     UNKNOWN = "unknown"
     seconds_to_wait_for_pumping_verification = 300  # 5 Minutes
 
-    def __init__(self, led: board.pin, pump: PumpController, water_levels: list[WaterLevelController], debug:Debug):
+    def __init__(self, led: board.pin, pump: PumpController, water_level_readers: list[WaterLevelReader], debug:Debug):
         self.led = digitalio.DigitalInOut(led)
         self.led.direction = digitalio.Direction.OUTPUT
         self.unknown_count = 0
         self.pump = pump
-        self.water_levels = water_levels
+        self.water_levels = water_level_readers
         self.pumping_started_flag = False
         self.pumping_verified = False
         self.last_pump_state = self.IDLE
