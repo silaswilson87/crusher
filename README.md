@@ -17,9 +17,13 @@ It uses three water level measurement sensors for added datapoints to help valid
 (as programmed in pumpingcontroller.py, method check_state)
 ![Pump state diagram](documentation/pump-state-diagram.png?raw=true)
 
-## Hardware diagram
+## Liquid Level Sensor
+(Liquid Level Sensor Switch (Single Float) SPST-NO Output Panel Mount, M8 Thread)
 
-![Pump wiring diagram](documentation/pump_Sketch_bb.jpg?raw=true)
+![Pump wiring diagram](documentation/59630-1-T-02-A.jpg?raw=true)
+
+## Hardware diagram
+v![Pump wiring diagram](documentation/pump_Sketch_bb.jpg?raw=true)
 
 ## HW List
 

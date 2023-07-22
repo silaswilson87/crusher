@@ -7,9 +7,8 @@ package "Feather" {
     [D5]
    }
    node "Analog Pins"{
-    [A0-A1]
-    [A2-A3]
-    [A4-A5]
+    [A0]
+    [A1]
    }
     node "Python program"{
        node "pumping_controller" {
@@ -19,9 +18,8 @@ package "Feather" {
        }
     }
   [pump_controller] -up-> [D5]:Programmatic\nOn/Off
-  [water_level] -up-> [A0-A1]:Programmatic\nRead value
-  [water_level] -up-> [A2-A3]:Programmatic\nRead value
-  [water_level] -up-> [A4-A5]:Programmatic\nRead value
+  [water_level] -up-> [A0]:Programmatic\nRead value
+  [water_level] -up-> [A1]:Programmatic\nRead value
 }
 
 package "Spring Boot\nRest Server" {
@@ -32,9 +30,8 @@ package "Spring Boot\nRest Server" {
 database "Hardware Components/Sensors\nconnected outside Bucket" {
    [Relay Switch]--> [D5]:Wired
    [Pump]--> [Relay Switch]:Wired
-   [Top Water Sensor] --> [A4-A5]:Wired
-   [Middle Water Sensor]--> [A2-A3]:Wired
-   [Bottom Water Sensor]--> [A0-A1]:Wired
+   [Top Water Sensor] --> [A1]:Wired
+   [Bottom Water Sensor]--> [A0]:Wired
 
 }
 [remote_event_notifier] --down-> [SpringBoot Java Application]:HTTP POST/GET

@@ -1,128 +1,186 @@
-import json
 
-import uuid
+import gc
+import json
+#import uuid
 import ipaddress
 import ssl
-import wifi
 import socketpool
 import adafruit_requests
+import wifi
+import time
 from util.debug import Debug
+from util.properties import Properties
+
 
 class RemoteEventNotifier:
-    def __init__(self, debug:Debug):
-        self.remote_url = None
-        self.event_id = None
+    def __init__(self, properties:Properties, debug:Debug):
+        self.properties = properties
+        self.transaction_count=0
+        self.error_count=0
         self.debug = debug
-        self.read_defaults()
+        self.requests = None
+        self.debug.print_debug("init in RemoteEventNotifier") 
+        self.ip_address = "None"
+        self.event_id = 0
+        self.remote_url = self.properties.defaults["remote_url"]
+        self.properties.read_defaults()
+        self.last_status_code = "N"
+        # dies early if can't connect to wifi, sets ip_address if connected
+        self.pool = socketpool.SocketPool(wifi.radio)
+
         self.connect()
-
-    def read_defaults(self):
-        try:
-            # Reads json file and creates if json file doesn't exist
-            with open('secrets.json', ) as f:
-                self.defaults = json.load(f)
-        except Exception as e:
-            # print ("Let's just ignore all exceptions, like this one: %s" % str(e))
-            print ("WARNING: Didn't read secrets.json, using default values. Error: %s" % str(e) )
-            self.defaults = {
-                "ssid":"Fios-4LC2c",
-                "password":"password",
-                "remote_url": "http:192.168.1.100:/"
-            }
-            # Can't write to the feather file system
-            # with open('defaults.json', 'w', encoding='utf-8') as f:
-            #     json.dump(self.defaults, f, ensure_ascii=False, indent=4)
-
-        self.remote_url = self.defaults["remote_url"]
-        self.debug.print_debug("read_defaults: ssid[%s], password[%s], remote_url[%s]" % \
-                         (self.defaults["ssid"], self.defaults["password"], self.defaults["remote_url"]))
-
-        self.debug.print_debug("Available WiFi networks:")
-
-        for network in wifi.radio.start_scanning_networks():
-          self.debug.print_debug("\t%s\t\tRSSI: %d\tChannel: %d" % (str(network.ssid, "utf-8"), network.rssi, network.channel))
-        wifi.radio.stop_scanning_networks()
-        self.connect()
-        return self.defaults
+        self.do_hello()
 
     def connect(self):
+        self.requests = adafruit_requests.Session(self.pool, ssl.create_default_context())
+        while not wifi.radio.ipv4_address:
+            self.debug.print_debug("\n===============================")
+            self.debug.print_debug("Connecting to WiFi...")
+            try:
+                wifi.radio.connect(self.properties.defaults["ssid"], self.properties.defaults["password"])
+                self.ip_address = str(wifi.radio.ipv4_address)
+                self.need_to_connect = False
+                self.last_status_code = "Connected"
+            except ConnectionError as e:
+                self.need_to_connect = True
+                print("Connection Error:", e)
+                print("Retrying in 10 seconds")
+                time.sleep(10)
+                gc.collect()
+        self.debug.print_debug("Connected! Need to connect flag: "+str(self.need_to_connect)+"\n")
+
+        # try:
+        #     ssid = self.properties.defaults["ssid"]
+        #     self.debug.print_debug(f"Connecting to {ssid}")
+        #     wifi.radio.connect(self.properties.defaults["ssid"], self.properties.defaults["password"])
+        #     self.ip_address = str(wifi.radio.ipv4_address)
+        # except Exception as e:
+        #     print ("WARNING: Didn't connect to wifi. Error: %s" % str(e) )
+        #     self.ip_address = "NOT FOUND"
+        #     raise e
+        # try:
+        #     pool = socketpool.SocketPool(wifi.radio)
+        #     for network in wifi.radio.start_scanning_networks():
+        #         self.debug.print_debug \
+        #             ("\t%s\t\tRSSI: %d\tChannel: %d" % (network.ssid, network.rssi, network.channel))
+        #     wifi.radio.stop_scanning_networks()
+        #     self.session =adafruit_requests.Session(pool, ssl.create_default_context())
+        #     return self.session
+        # except Exception as e:
+        #     print ("WARNING: Didn't create session. Error: %s" % str(e) )
+        #     raise e
+
+
+    def do_hello(self):
+        response = self.requests.get(self.remote_url+"/component/hello")
+        self.debug.print_debug("Hello Response: "+response.text)
+        self.transaction_count += 1
+
+    def success(self,response):
+        return response.status_code>=200 and response.status_code < 300
+
+    def reset_id(self):
+        self.event_id = 0
+
+    def do_post(self, api_action:str, pump_state:str, event_id_action:str, misc_status):
+        self.debug.print_debug("POST")
         try:
-            self.debug.print_debug("Connecting to %s" % self.defaults["ssid"])
-            wifi.radio.connect(self.defaults["ssid"], self.defaults["password"])
-            self.debug.print_debug("Connected to %s!" % self.defaults["ssid"])
-            self.debug.print_debug("My IP address is "+wifi.radio.ipv4_address)
+
+            # when the program starts, the water level can be in any kind of state,
+            # this logic tries to synchronize some of the unknowns
+            if self.need_to_connect:
+                self.connect()
+            headers = {'Content-Type': 'application/json'}
+            post_body = {}
+            # Don't change the contents of post_body without coordinating with the server side
+            post_body["action"] = api_action
+            post_body["eventId"] = self.event_id
+            post_body["pumpState"] = pump_state
+            post_body["componentId"] = "1"
+            post_body["miscStatus"] = misc_status
+            self.debug.print_debug("post_body "+str(post_body))
+            #eventid = str(uuid.uuid4())
+            url = '{}/component/mission?mission=Pump1Mission'.format(self.remote_url)
+            self.debug.print_debug("Post url: "+url)
+            response = self.requests.post(url=url, headers=headers, data=json.dumps(post_body))
+            self.debug.print_debug("post response code: "+str(response.status_code)+" text "+response.text)
+            #return (response.status_code,response.text)
+            self.last_status_code = str(response.status_code)
+            self.transaction_count += 1
+            return response
         except Exception as e:
-            print ("WARNING: Didn't connect to wifi. Error: %s" % str(e) )
-            raise e
-        try:
-            pool = socketpool.SocketPool(wifi.radio)
-            return adafruit_requests.Session(pool, ssl.create_default_context())
-        except Exception as e:
-            print ("WARNING: Didn't create session. Error: %s" % str(e) )
+            self.error_count += 1
+            self.last_status_code = "E"
+            self.need_to_connect = True
+            # if(e.__cause__ != None):
+            #     print(e.__cause__)
+            # self.debug.print_debug("do_post exception  response " + str(self.request._last_response)+" error "+str(e))
+            self.debug.print_debug("do_post exception  " +" error "+str(e))
+            # attributes = dir(e)
+            # # Step 3: Print the attributes
+            # for attribute in attributes:
+            #     print(attribute)
             raise e
 
-    def do_post(self, path:str, payload):
+    def do_get(self, api_verb:str):
+        self.debug.print_debug("GET")
         try:
-            eventid = str(uuid.uuid4())
-            response = self.connect().post(self.remote_url + "/"+ eventid + path, payload)
-            self.debug.print_debug("get return code "+response.status_code)
-            return (response.status_code,response.text)
+            if self.need_to_connect:
+                self.connect()
+            url = '{}/component/mission?mission=Pump1Mission&component_id=1&event_id={}&verb={}}'.format(self.remote_url,self.event_id,api_verb)
+            self.debug.print_debug("Get url: "+url)
+            # response = self.session.get(f"{self.remote_url}/{eventid}/{api_verb}")
+            response = self.requests.get(url)
+            self.debug.print_debug("get return code "+str(response.status_code)+" text "+response.text)
+            self.last_status_code = str(response.status_code)
+            self.transaction_count += 1
+            return response
         except Exception as e:
-            self.debug.print_debug("do_post exception " + str(e))
-            raise e
-
-    def do_get(self, path:str):
-        try:
-            eventid = str(uuid.uuid4())
-            response = self.connect().get(self.remote_url + "/"+ eventid + path)
-            print("get return code "+response.status_code)
-            return (response.status_code,response.text)
-        except Exception as e:
+            self.error_count += 1
+            self.last_status_code = "E"
+            self.need_to_connect = True
             self.debug.print_debug("do_get exception " + str(e))
             raise e
 
-    def send_status_handshake(self, status):
-        self.debug.print_debug("send_status_handshake "+str(status))
-        return self.do_post("/status",status)
+    def send_status_handshake(self, pump_state:str, misc_status:json):
+        self.debug.print_debug("status_handshake "+str(pump_state))
+        return self.do_post("status_handshake",pump_state,"", misc_status)
 
-    def send_unknown_status(self):
+    def send_unknown_status(self,pump_state:str):
         self.debug.print_debug("send_unknown_status")
-        return self.do_post("/send_unknown_status",self.generate_default_post_body())
+        return self.do_post("send_unknown_status",pump_state,"","None")
 
-
-    def send_pumping_canceled_ack(self):
+    def send_pumping_canceled_ack(self,pump_state:str):
         self.debug.print_debug("send_pumping_canceled_ack")
-        return self.do_post("/pumping_canceled_ack",self.generate_default_post_body())
+        return self.do_post("pumping_canceled_ack",pump_state,"reset","None")
 
-    def send_start_pumping_ack(self):
+    def send_start_pumping_ack(self,pump_state:str):
         self.debug.print_debug("send_start_pumping_ack")
-        return self.do_post("/start_pumping_ack",self.generate_default_post_body())
+        return self.do_post("start_pumping_ack",pump_state,"","None")
 
-    def send_stop_pumping_ack(self):
+    def send_stop_pumping_ack(self,pump_state:str):
         self.debug.print_debug("send_stop_pumping_ack")
-        return self.do_post("/stop_pumping_ack",self.generate_default_post_body())
+        return self.do_post("stop_pumping_ack",pump_state,"reset","None")
 
-    def send_ready_to_pump(self):
+    def send_ready_to_pump(self,pump_state:str):
+        # This is the point in the lifecyle where an event id is assigned.
+        # We only go forward once we get the event id from the server
         self.debug.print_debug("send_ready_to_pump")
-        return self.do_post("/read_to_pump",self.generate_default_post_body())
+        # TODO - at some poing (when doing another deployment, change read_ to ready_
+        return self.do_post("read_to_pump",pump_state,"new","None")
 
-    def start_pumping(self):
+    def start_pumping(self,pump_state:str):
         self.debug.print_debug("start_pumping")
-        return self.do_post("/start_pumping",self.generate_default_post_body())
+        return self.do_post("start_pumping",pump_state,"","None")
 
-    def pumping_confirmed(self):
+    def pumping_confirmed(self,pump_state:str):
         self.debug.print_debug("pumping_confirmed")
-        return self.do_post("/pumping_confirmed",self.generate_default_post_body())
+        return self.do_post("pumping_confirmed",pump_state,"","None")
 
-    def pumping_finished(self):
+    def pumping_finished(self,pump_state:str):
         self.debug.print_debug("pumping_finished")
-        return self.do_post("/pumping_finished",self.generate_default_post_body())
+        return self.do_post("pumping_finished",pump_state,"reset","None")
 
-    def missed_pumping_verification(self):
+    def missed_pumping_verification(self,pump_state:str):
         self.debug.print_debug("missed_pumping_verification")
-        return self.do_post("/missed_pumping_verification",self.generate_default_post_body())
-
-    def generate_default_post_body(self):
-        return {
-            "parent_event_id": self.event_id
-        }
+        return self.do_post("missed_pumping_verification",pump_state,"","None")
