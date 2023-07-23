@@ -3,6 +3,7 @@
 skinparam componentStyle uml1
 
 [Pump]
+[Water Reservoir]
 
 package "Feather" {
    node "GPIO Pins" {
@@ -34,4 +35,7 @@ database "Physical Switch/Sensors" {
    [Bottom Water Sensor]--> [D6]:Wired
 }
 [remote_event_notifier] --down-> [SpringBoot Java Application]:HTTP POST/GET
+[Top Water Sensor] --down-> [Water Reservoir]:Inside
+[Bottom Water Sensor] --down-> [Water Reservoir]:Inside
+[Pump] --down-> [Water Reservoir]:Tubing
 @enduml
