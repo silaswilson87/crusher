@@ -36,8 +36,9 @@ v![Pump wiring diagram](documentation/pump_Sketch_bb.jpg?raw=true)
 | [Adafruit ESP32-S2](https://www.adafruit.com/product/5000)                                                                             | Uses CircuitPython 8.0.0 |
 | [Liquid Level Sensor](https://www.digikey.com/en/products/detail/littelfuse-inc./59630-1-T-02-A/4771999?utm_adgroup=General&utm_term=) | Littelfuse Inc.|
 | [Adafruit STEMMA Non-Latching Mini Relay - JST PH 2mm](https://www.adafruit.com/product/4409)                                          |
+| [Adafruit FeatherWing OLED](https://www.adafruit.com/product/4650)                                                                     |
 | [5v Buck Converter](https://www.amazon.com/gp/product/B0B779ZYN1/ref=ppx_yo_dt_b_asin_title_o08_s00?ie=UTF8&th=1)                      | Amazon  |
-| [Micro Self-priming Diapharm Pump](https://www.amazon.com/gp/product/B09ZX4TFNG/ref=ppx_yo_dt_b_asin_title_o07_s00?ie=UTF8&psc=1)       | Amazon  |
+| [Micro Self-priming Diapharm Pump](https://www.amazon.com/gp/product/B09ZX4TFNG/ref=ppx_yo_dt_b_asin_title_o07_s00?ie=UTF8&psc=1)      | Amazon  |
 
 
 ## Current state of project
