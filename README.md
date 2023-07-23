@@ -27,7 +27,8 @@ It uses three water level measurement sensors for added datapoints to help valid
 ![Pump](documentation/51wQLqJQSUL._AC_SX569_.jpg?raw=true)
 
 ## Hardware diagram
-v![Pump wiring diagram](documentation/pump_Sketch_bb.jpg?raw=true)
+(The FeatherWing is stacked on ESP32-S2)
+![Pump wiring diagram](documentation/pump_Sketch_bb.jpg?raw=true)
 
 ## HW List
 
