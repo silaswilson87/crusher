@@ -5,10 +5,8 @@ skinparam componentStyle uml1
 package "Feather" {
    node "GPIO Pins" {
     [D5]
-   }
-   node "Analog Pins"{
-    [A0]
-    [A1]
+    [D6]
+    [D9]
    }
     node "Python program"{
        node "pumping_controller" {
@@ -18,8 +16,8 @@ package "Feather" {
        }
     }
   [pump_controller] -up-> [D5]:Programmatic\nOn/Off
-  [water_level] -up-> [A0]:Programmatic\nRead value
-  [water_level] -up-> [A1]:Programmatic\nRead value
+  [water_level] -up-> [D6]:Programmatic\n"Wet"/"Dry"
+  [water_level] -up-> [D9]:Programmatic\n"Wet"/"Dry"
 }
 
 package "Spring Boot\nRest Server" {
@@ -30,9 +28,8 @@ package "Spring Boot\nRest Server" {
 database "Hardware Components/Sensors\nconnected outside Bucket" {
    [Relay Switch]--> [D5]:Wired
    [Pump]--> [Relay Switch]:Wired
-   [Top Water Sensor] --> [A1]:Wired
-   [Bottom Water Sensor]--> [A0]:Wired
-
+   [Top Water Sensor] --> [D6]:Wired
+   [Bottom Water Sensor]--> [D9]:Wired
 }
 [remote_event_notifier] --down-> [SpringBoot Java Application]:HTTP POST/GET
 @enduml
