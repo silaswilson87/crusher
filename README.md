@@ -10,20 +10,24 @@ It uses three water level measurement sensors for added datapoints to help valid
 **Note**: To see debug output, create empty file with name "debug" in the root of the feather.
 
 ## Component diagram
+[Diagram created with PlantUML (pump_component.puml) ](https://plantuml.com/)
 ![Pump state diagram](documentation/pump_component.png?raw=true)
 
 
 ## State diagram 
 (as programmed in pumpingcontroller.py, method check_state)
+
+[Diagram created with PlantUML (pump-state-diagram.puml) ](https://plantuml.com/)
+
 ![Pump state diagram](documentation/pump-state-diagram.png?raw=true)
 
 ## Liquid Level Sensor
 (Liquid Level Sensor Switch (Single Float) SPST-NO Output Panel Mount, M8 Thread)
 
+
 ![Pump wiring diagram](documentation/59630-1-T-02-A.jpg?raw=true)
 
 ## Pump
-
 ![Pump](documentation/51wQLqJQSUL._AC_SX569_.jpg?raw=true)
 
 ## Hardware diagram
