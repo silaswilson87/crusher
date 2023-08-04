@@ -32,8 +32,8 @@ package "Spring Boot\nRest Server" {
 database "Physical Switch/Sensors" {
    [D12]--> [Relay Switch]:Wired
    [Relay Switch]--> [Pump]:Wired
-   [Top Water Sensor] --> [D5]:Wired
-   [Bottom Water Sensor]--> [D6]:Wired
+   [Top Water Sensor] --> [D6]:Wired
+   [Bottom Water Sensor]--> [D5]:Wired
 }
 [remote_event_notifier] --down-> [SpringBoot Java Application]:HTTP POST/GET
 [Top Water Sensor] --down-> [Water Reservoir]:Inside

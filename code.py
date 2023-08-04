@@ -68,9 +68,9 @@ while True:
         http_status = "#%sC:%sE#:%d" % (
         "{:,}".format(pumping.remote_notifier.transaction_count), pumping.remote_notifier.last_status_code,
         pumping.remote_notifier.error_count)
-        display.display_status(this_address, pumping_state, program_start_time, pump_start_time, water_level_readers, http_status)
         if pumping_state == pumping.REMOTE_NOTIFIER_ERROR:
             display.display_error(pumping.error_string)
+            time.sleep(20)
             # This is a hard error. Getting an event id is required.
             # Restart the pumping life cycle, go back to idle
             pumping_state = pumping.IDLE
@@ -90,12 +90,15 @@ while True:
         elif pumping_state == pumping.IDLE:
             timer.cancel_timer()
 
+        display.display_status(this_address, pumping_state, program_start_time, pump_start_time, water_level_readers, http_status)
+
     except Exception as e:
         error = str(e)
         display.display_error(error)
         print("ERROR: pumping failed. Error: %s" % error)
         pumping_state = "error"
         time.sleep(20)
+        display.display_status(this_address, pumping_state, program_start_time, pump_start_time, water_level_readers, http_status)
         continue
 
     debug.print_debug("Pumping State: " + pumping_state)
