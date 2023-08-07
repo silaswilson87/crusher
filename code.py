@@ -98,22 +98,10 @@ while True:
         print("ERROR: pumping failed. Error: %s" % error)
         pumping_state = "error"
         time.sleep(20)
-        display.display_status(this_address, pumping_state, program_start_time, pump_start_time, water_level_readers, http_status)
+        display.display_status(this_address, pumping_state, program_start_time, pump_start_time, water_level_readers, "Err")
         continue
 
     debug.print_debug("Pumping State: " + pumping_state)
 
     pumping.wait_for_water_level_state_change(debug, properties)
-    # if debug.is_debug():
-    #     target_elapsed = properties.defaults["sleep_seconds_debug"]
-    # else:
-    #     target_elapsed = properties.defaults["sleep_seconds"]
-    #time.sleep(target_elapsed)
 
-    # start = time.time()
-    # end = time.time()
-    # while end - start < target_elapsed:
-    #     if(buttons.button_pushed()):
-    #         print("core - button pressed")
-    #     time.sleep(1)
-    #     end = time.time()

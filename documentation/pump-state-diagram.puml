@@ -18,7 +18,7 @@ Pumping -Down-> Verify
 Pumping : When water level reaches top water level sensor
 
 Verify -> Done
-Verify : When pumping starts, code waits for water level to go lower than the middle water sensor.\nThis proves the pump is removing water.
+Verify : When pumping starts, code waits for the top sensor to go dry.\nThis proves the pump is removing water.
 }
  state Done {
 Turn_Off_Pump -> Idle
