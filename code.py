@@ -1,17 +1,19 @@
 import board
 import digitalio
 import time
-from digitalio import DigitalInOut, Direction,
-
-mosfet = digitalio.DigitalInOut(board.D13)               # Mosfset switch controlling a 12V Pnuematic solenoid valve between digital pin12 and ground
-mosfet.direction = digitalio.Direction.OUTPUT            
+from digitalio import DigitalInOut, Direction,           
 
 red = digitalio.DigitalInOut(board.D12)                  # Automatic state
 red.direction = digitalio.Direction.OUTPUT
-green = digitalio.DigitalInOut(board.D11)                # Mosfet trigger light
+green = digitalio.DigitalInOut(board.D11)                # Mosfet trigger light - Mosfset switch controlling a 12V Pnuematic solenoid valve 
 green.direction = digitalio.Direction.OUTPUT
 blue = digitalio.DigitalInOut(board.D10)                 # Manual state
 blue.direction = digitalio.Direction.OUTPUT
+
+irbeam = digitalio.DigitalInOut(board.D13)               # Mosfset switch controlling a 12V Pnuematic solenoid valve between digital pin12 and ground
+irbeam.direction = digitalio.Direction.INPUT
+irbeam.pull = digitalio.Pull.UP
+irbeam_val = irbeam.value                                # Assign Boolean value of pin D7 to variable as a string
 
 touch_pin = DigitalInOut(board.D7)                       # Push button
 touch_pin.direction = digitalio.Direction.INPUT
@@ -26,42 +28,40 @@ auto_pin.direction = digitalio.Direction.INPUT
 auto_pin_val = auto_pin.value                            # Assign Boolean value of pin D1 to variable as a string
 
 def manual():                                            # Controller for manual mode of button
-        print("-Manual- Initiate valve")
-        green.value = True
-        mosfet.value = True
-        time.sleep(.2)
-        green.value = False
-        mosfet.value = False
+    print("-Manual- Initiate valve")
+    green.value = True
+    time.sleep(.3)
+    green.value = False
         
 def auto():                                              # Control for manual mode of button
-        print("-Auto- Initiate valve")
-        green.value = True
-        mosfet.value = True
-        time.sleep(.5)
-        green.value = False
-        mosfet.value = False
-        time.sleep(.5)
+    while True:
+        if auto_pin.value and irbeam.value == False:
+            print("-Auto- Initiate valve")
+            green.value = True
+            time.sleep(.5)
+            green.value = False
+            time.sleep(.5)
+        else:
+            break
 
 print("(-Base-level 0)")
+print("Current IR beam orientation = " + str(irbeam_val))
 print("Current slide switch Manual orientation = " + str(manual_pin_val))
 print("Current slide switch Automatic orientation = " + str(auto_pin_val))
 print("Current push button value = " + str(touch_val))
 
-while True:
+while True:                               # Calls manual function of push button mosfet control
     touch_val = touch_pin.value
     manual_pin_val = manual_pin.value
     auto_pin_val = auto_pin.value
-    if manual_pin.value :                               # Calls manual function of push button mosfet control
+    if manual_pin.value:  # Calls manual function of push button mosfet control
         blue.value = True
         red.value = False
         if manual_pin.value and touch_pin.value:
-            manual()            
-    elif auto_pin.value :                               # Calls auto function of push button mosfet control
+            manual()
+    elif auto_pin.value:  # Calls auto function of push button mosfet control
         red.value = True
         blue.value = False
-        if auto_pin.value and touch_pin.value:
+        if auto_pin.value and touch_pin.value == True:
             auto()
-
-    
-
-
+                    
