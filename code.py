@@ -45,7 +45,6 @@ def auto():  # Logic for button
         green.value = False
         mosfet.value = False
         time.sleep(.6)
-        return
 
 def manual_button():  # Manual Button logic initializer
     if str(touch_val) == "True":
