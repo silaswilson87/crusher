@@ -10,7 +10,7 @@ green.direction = digitalio.Direction.OUTPUT
 blue = digitalio.DigitalInOut(board.D10)                 # Manual state
 blue.direction = digitalio.Direction.OUTPUT
 
-irbeam = digitalio.DigitalInOut(board.D13)               # Mosfset switch controlling a 12V Pnuematic solenoid valve between digital pin12 and ground
+irbeam = digitalio.DigitalInOut(board.D13)               # IR break beam sensor
 irbeam.direction = digitalio.Direction.INPUT
 irbeam.pull = digitalio.Pull.UP
 irbeam_val = irbeam.value                                # Assign Boolean value of pin D7 to variable as a string
