@@ -15,15 +15,15 @@ blue.direction = digitalio.Direction.OUTPUT
 
 touch_pin = DigitalInOut(board.D7)                       # Push button
 touch_pin.direction = digitalio.Direction.INPUT
-touch_val = touch_pin.value                              # Assign Boolean value of pin D7 to variable
+touch_val = touch_pin.value                              # Assign Boolean value of pin D7 to variable as a string
 
 manual_pin = DigitalInOut(board.D2)                      # Manual mode
 manual_pin.direction = digitalio.Direction.INPUT
-manual_pin_val = manual_pin.value                        # Assign Boolean value of pin D2 to variable
+manual_pin_val = manual_pin.value                        # Assign Boolean value of pin D2 to variable as a string
 
 auto_pin = DigitalInOut(board.D1)                        # Automatic mode
 auto_pin.direction = digitalio.Direction.INPUT
-auto_pin_val = auto_pin.value                            # Assign Boolean value of pin D1 to variable
+auto_pin_val = auto_pin.value                            # Assign Boolean value of pin D1 to variable as a string
 
 def manual():                                            # Controller for manual mode of button
         print("-Manual- Initiate valve")
