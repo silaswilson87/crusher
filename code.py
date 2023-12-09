@@ -43,7 +43,7 @@ def auto():                                              # Control for manual mo
             time.sleep(.5)
         else:
             break
-
+            
 print("(-Base-level 0)")
 print("Current IR beam orientation = " + str(irbeam_val))
 print("Current slide switch Manual orientation = " + str(manual_pin_val))
@@ -51,9 +51,6 @@ print("Current slide switch Automatic orientation = " + str(auto_pin_val))
 print("Current push button value = " + str(touch_val))
 
 while True:                               # Calls manual function of push button mosfet control
-    touch_val = touch_pin.value
-    manual_pin_val = manual_pin.value
-    auto_pin_val = auto_pin.value
     if manual_pin.value:  # Calls manual function of push button mosfet control
         blue.value = True
         red.value = False
