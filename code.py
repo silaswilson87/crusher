@@ -13,7 +13,7 @@ blue.direction = digitalio.Direction.OUTPUT
 irbeam = digitalio.DigitalInOut(board.D13)               # IR break beam sensor
 irbeam.direction = digitalio.Direction.INPUT
 irbeam.pull = digitalio.Pull.UP
-irbeam_val = irbeam.value                                # Assign Boolean value of pin D7 to variable as a string
+irbeam_val = irbeam.value                                # Assign Boolean value of pin D13 to variable as a string
 
 touch_pin = DigitalInOut(board.D7)                       # Push button
 touch_pin.direction = digitalio.Direction.INPUT
