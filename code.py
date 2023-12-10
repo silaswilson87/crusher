@@ -50,7 +50,7 @@ print("Current slide switch Manual orientation = " + str(manual_pin_val))
 print("Current slide switch Automatic orientation = " + str(auto_pin_val))
 print("Current push button value = " + str(touch_val))
 
-while True:                               # Calls manual function of push button mosfet control
+while True:                           
     if manual_pin.value:  # Calls manual function of push button mosfet control
         blue.value = True
         red.value = False
