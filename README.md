@@ -7,29 +7,22 @@ The purpose of this project is to develope an automated pneumatic can crusher wh
 **Note**: To see debug output, create empty file with name "debug" in the root of the feather.
 
 ## Component diagram
-[Diagram created with PlantUML (pump_component.puml) ](https://plantuml.com/)
-![Pump state diagram](documentation/pump_component.png?raw=true)
 
+TBD
 
 ## State diagram 
 (as programmed in pumpingcontroller.py, method check_state)
 
 [Diagram created with PlantUML (pump-state-diagram.puml) ](https://plantuml.com/)
 
-![Pump state diagram](documentation/pump-state-diagram.png?raw=true)
 
-## Liquid Level Sensor
+## pneumatic 
 (Liquid Level Sensor Switch (Single Float) SPST-NO Output Panel Mount, M8 Thread)
 
-
-![Pump wiring diagram](documentation/59630-1-T-02-A.jpg?raw=true)
-
 ## Pump
-![Pump](documentation/51wQLqJQSUL._AC_SX569_.jpg?raw=true)
 
 ## Hardware diagram
 (The FeatherWing is stacked on ESP32-S2 so there isn't any wiring between them)
-![Pump wiring diagram](documentation/pump_Sketch_bb.jpg?raw=true)
 
 ## HW List
 
